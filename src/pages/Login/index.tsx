@@ -1,17 +1,17 @@
-import React, { useState, useCallback } from "react";
-import { IInputRefProps, Input } from "../../components/Input";
-import { Button } from "../../components/Button";
+import React, { useState, useCallback, useRef } from "react";
 import { useApi } from "../../hooks/api";
 import { useGlobal } from "../../hooks/global";
+import { Button } from "../../components/Button";
+import { Container, Content, Form, Title } from "./style";
+import { IInputRefProps, Input } from "../../components/Input";
 
 export const Login: React.FC = () => {
     const [loading, setLoading] = useState(false)
 
-    const input_ref = React.useRef<IInputRefProps>(null)
-
-    const { notify } = useGlobal()
+    const input_ref = useRef<IInputRefProps>(null)
 
     const { signIn } = useApi()
+    const { notify } = useGlobal()
 
     const handleSubmit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
@@ -28,18 +28,29 @@ export const Login: React.FC = () => {
     }, [input_ref])
 
     return (
-        <div style={{ display: "flex", flexDirection: "column", flex: 1, justifyContent: "center", alignItems: "center" }}>
-            <div style={{ display: "flex", flexDirection: "column", gap: 30, flex: 1, justifyContent: "center" }}>
-                <div style={{ fontSize: 18 }}>
+        <Container>
+            <Content>
+
+                <Title>
                     Ponto <b>Ilumeo</b>
-                </div>
-                <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: 20 }}>
-                    <Input required disabled={loading} label="Código do usuário" ref={input_ref} />
-                    <Button type="submit" loading={loading} disabled={loading}>
-                        Confirmar
-                    </Button>
-                </form>
-            </div>
-        </div>
+                </Title>
+
+                <Form onSubmit={handleSubmit}>
+                    <Input
+                        required
+                        disabled={loading}
+                        label="Código do usuário"
+                        ref={input_ref}
+                    />
+                    <Button
+                        text="Confirmar"
+                        type="submit"
+                        loading={loading}
+                        disabled={loading}
+                    />
+                </Form>
+
+            </Content>
+        </Container>
     )
 }
