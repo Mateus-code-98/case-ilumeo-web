@@ -1,7 +1,7 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { secondary } from "../../theme";
 
-export const Container = styled.div`
+export const Container = styled.div<{ disabled: boolean }>`
     cursor: text;
     display: flex;
     flex-direction: column;
@@ -10,6 +10,10 @@ export const Container = styled.div`
     border-radius: 5px;
     gap: 5px;
     color: #FFF;
+    ${props => props.disabled && css`
+        opacity: 0.5;
+        cursor: not-allowed;
+    `}
 `
 
 export const BaseInput = styled.input`
@@ -20,9 +24,12 @@ export const BaseInput = styled.input`
     text-transform: uppercase;
 `
 
-export const Label = styled.label`
+export const Label = styled.label<{ disabled: boolean }>`
     font-weight: lighter;
-    font-size: 14px;
+    font-size: 12px;
     cursor: text;
     user-select: none;
+    ${props => props.disabled && css`
+        cursor: not-allowed;
+    `}
 `

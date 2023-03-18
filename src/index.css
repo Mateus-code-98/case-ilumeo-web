@@ -1,25 +1,21 @@
-:root {
-    --vh: 1vh;
-}
-
 * {
     padding: 0px;
     margin: 0px;
     outline: 0px;
-    color:#FFF;
     font-family: Montserrat;
 }
 
 #id {
     display: flex;
     flex: 1;
-    min-height: calc(100 * var(--vh));
+    min-height: 100vh;
 }
 
 body {
     margin: 0px !important;
     padding: 0px !important;
     width: 100%;
+    color:#FFF;
 }
 
 *::-webkit-scrollbar {

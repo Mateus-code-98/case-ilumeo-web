@@ -25,7 +25,7 @@ const IconToast = {
 
 const notifyProps: ToastOptions = {
     position: "top-right",
-    duration: 10000,
+    duration: 1000000,
     style: {
         padding: 0,
         hyphens: "auto",
@@ -42,15 +42,15 @@ export const GlobalProvider: React.FC<PropsWithChildren> = ({ children }) => {
 
     const notify = (message: string, type: "error" | "success" | "alert") => toast((t) => (
         <span onClick={() => toast.dismiss(t.id)} style={{ display: "flex", padding: 10, flexDirection: "row", alignItems: "center" }}>
-            <div>{IconToast[type]}</div>
-            <div style={{ cursor: "default", textAlign: "center" }}>{message}</div>
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>{IconToast[type]}</div>
+            <div style={{ cursor: "default", textAlign: "center", color: "#000", fontSize: 13 }}>{message}</div>
         </span>
     ), notifyProps);
 
     const notifyOnlyAction = (message: string, type: "error" | "success" | "alert") => toast((t) => (
         <span onClick={() => toast.dismiss(t.id)} style={{ display: "flex", padding: 10, flexDirection: "row", alignItems: "center" }}>
-            <div>{IconToast[type]}</div>
-            <div style={{ cursor: "default", textAlign: "center" }}>{message}</div>
+            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>{IconToast[type]}</div>
+            <div style={{ cursor: "default", textAlign: "center", color: "#000", fontSize: 13, }}>{message}</div>
         </span>
     ), notifyProps);
 
@@ -61,11 +61,6 @@ export const GlobalProvider: React.FC<PropsWithChildren> = ({ children }) => {
             notifyOnlyAction(message, type)
         }, 100)
     }, [])
-
-    window.onresize = () => {
-        var vh = window.innerHeight * 0.01;
-        document.documentElement.style.setProperty("--vh", `${vh}px`);
-    }
 
     return (
         <GlobalContext.Provider value={{ notifyOnly, notify, isMobile, paginationLimit }}>
