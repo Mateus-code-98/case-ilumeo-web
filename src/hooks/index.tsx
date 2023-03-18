@@ -10,6 +10,6 @@ const AppProvider: React.FC<PropsWithChildren> = ({ children }) => {
             </ApiProvider>
         </GlobalProvider>
     )
-}
+};
 
 export default AppProvider;

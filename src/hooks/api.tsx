@@ -50,7 +50,7 @@ export const ApiProvider: React.FC<PropsWithChildren> = ({ children }) => {
         const SIGN_OUT_STATUS = [STATUS_UNAUTHORIZED, STATUS_FORBIDDEN]
 
         if (SIGN_OUT_STATUS.includes(response_status)) {
-            notifyOnly("Sua sessão expirou, faça login novamente", "alert")
+            notifyOnly("Faça login novamente", "alert")
             signOut()
         }
 

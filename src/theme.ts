@@ -1,4 +1,5 @@
 export const primary = "#FE8A00";
+export const secondary = "#1E2733";
 export const background = "#151F2B";
 
 export const fail = "#FF6B6B";
