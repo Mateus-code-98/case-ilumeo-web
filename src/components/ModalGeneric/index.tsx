@@ -1,6 +1,6 @@
 import React, { PropsWithChildren, useEffect } from "react";
 import { BaseModal, Container } from "./style";
-import { calculeteVH } from "../../services/calculeteVH.service";
+import { calculateVH } from "../../services/calculateVH.service";
 
 interface ModalProps extends PropsWithChildren {
     open: boolean;
@@ -11,7 +11,7 @@ interface ModalProps extends PropsWithChildren {
 export const ModalGeneric: React.FC<ModalProps> = (props) => {
     const { open, onClose, children, backgroundVisible = false } = props;
 
-    useEffect(() => { calculeteVH() }, []);
+    useEffect(() => { calculateVH() }, []);
 
     return (
         <BaseModal BackdropProps={{ invisible: backgroundVisible }} open={open} onClose={() => onClose()}>

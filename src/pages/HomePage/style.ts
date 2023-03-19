@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { gray, secondary } from "../../theme";
+import styled, { css } from "styled-components";
+import { background, gray, secondary } from "../../theme";
 
 export const Container = styled.div`
     display: flex;
@@ -8,6 +8,7 @@ export const Container = styled.div`
     justify-content: center;
     align-items: center;
     padding: 30px;
+    padding-top: 0px;
 `
 
 export const Content = styled.div`
@@ -15,18 +16,20 @@ export const Content = styled.div`
     flex-direction: column;
     gap: 20px;
     flex: 1;
-    justify-content: center;
     min-width: 500px;
     @media(max-width: 560px) {
         min-width: 100%;
     }
 `
 
-export const PreviousDaysContainer = styled.div`
+export const PreviousDaysContainer = styled.div<{ marginTop: number }>`
     display: flex;
     flex-direction: column;
     gap: 10px;
     font-size: 12px;
+    ${props => css`
+        margin-top: ${props.marginTop ?? 0}px;
+    `}
 `
 
 export const PreviousDayCard = styled.div`
@@ -58,12 +61,24 @@ export const UserContainer = styled.div`
     align-items: flex-end;
 `
 
-export const ScroolContainer = styled.div`
+export const TopContainer = styled.div<{ isMobile: boolean, scrollVisible: boolean }>`
     display: flex;
+    position: fixed;
     flex-direction: column;
-    gap: 10px;
-    padding-right: 10px;
-    margin-right: -10px;
-    overflow: auto;
-    max-height: calc(calc(100 * var(--vh)) - 251px);
+    top: 0;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    background: ${background};
+    min-width: 500px;
+    gap: 20px;
+    ${props => (props.isMobile || (!props.isMobile && !props.scrollVisible)) && css`
+        @media(max-width: 560px) {
+            min-width: calc(100vw - 60px);
+        }
+    `}
+    ${props => !props.isMobile && props.scrollVisible && css`
+        @media(max-width: 560px) {
+            min-width: calc(100vw - 72px);
+        }
+    `}
 `

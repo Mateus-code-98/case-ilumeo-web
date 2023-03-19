@@ -6,12 +6,12 @@ import { Container, Content, Form, Title } from "./style";
 import { IInputRefProps, Input } from "../../components/Input";
 
 export const Login: React.FC = () => {
+    const { signIn } = useApi()
+    const { notify } = useGlobal()
+
     const [loading, setLoading] = useState(false)
 
     const input_ref = useRef<IInputRefProps>(null)
-
-    const { signIn } = useApi()
-    const { notify } = useGlobal()
 
     const handleSubmit = useCallback(async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()

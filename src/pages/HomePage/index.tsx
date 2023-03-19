@@ -3,16 +3,18 @@ import { io, Socket } from "socket.io-client";
 import { useApi } from "../../hooks/api";
 import { useGlobal } from "../../hooks/global";
 import { Button } from "../../components/Button";
-import { REACT_APP_API } from "../../utils/envs";
 import { IWorkedDaysProps } from "../../interfaces";
 import { ModalDayChecks } from "../../components/ModalDayChecks";
 import { msToTimeService } from "../../services/msToTime.service";
 import { generateDateService } from "../../services/generateDate.service";
 import { getWorkingDaysService } from "../../services/getWorkingDays.service";
 import { calcWorkingTimeService } from "../../services/calcWorkingTime.service";
-import { Container, Content, Header, PreviousDayCard, PreviousDayDate, PreviousDaysContainer, ScroolContainer, UserContainer } from "./style";
+import { Container, Content, Header, PreviousDayCard, PreviousDayDate, PreviousDaysContainer, TopContainer, UserContainer } from "./style";
 
 export const HomePage: React.FC = () => {
+    const { api, user, signOut } = useApi()
+    const { notify, isMobile, scrollBarVisible } = useGlobal()
+
     const [loading, setLoading] = useState(false)
     const [socket, setSocket] = useState<Socket>()
     const [workingTimeToday, setWorkingTimeToday] = useState(0)
@@ -20,21 +22,19 @@ export const HomePage: React.FC = () => {
     const [workingDays, setWorkingDays] = useState<IWorkedDaysProps>({})
     const [daySelected, setDaySelected] = useState<string | null>(null)
 
-    const { notify } = useGlobal()
-
-    const { api, user, signOut } = useApi()
+    const top_container_ref = React.useRef<HTMLDivElement>(null)
 
     const searchWorkingDays = useCallback(async (socket?: Socket) => {
         setLoading(true)
-        if (REACT_APP_API) {
-            socket?.removeAllListeners()
-            socket?.disconnect()
+        // if (REACT_APP_API) {
+        //     socket?.removeAllListeners()
+        //     socket?.disconnect()
 
-            const socketInstance = io(REACT_APP_API)
-            setSocket(socketInstance)
+        //     const socketInstance = io(REACT_APP_API)
+        //     setSocket(socketInstance)
 
-            socketInstance.on(user.id, () => searchWorkingDays(socket))
-        }
+        //     socketInstance.on(user.id, () => searchWorkingDays(socket))
+        // }
         try {
             const [result_working_time, result_check_in_progress] = await Promise.all([
                 api.get("/users/working-time"),
@@ -86,49 +86,49 @@ export const HomePage: React.FC = () => {
 
             <Content>
 
-                <Header>
-                    <div>Relógio de ponto</div>
+                <TopContainer ref={top_container_ref} scrollVisible={scrollBarVisible} isMobile={isMobile}>
+                    <Header>
+                        <div>Relógio de ponto</div>
 
-                    <UserContainer onClick={signOut}>
+                        <UserContainer onClick={signOut}>
 
-                        <b>#{user.code}</b>
+                            <b>#{user.code}</b>
 
-                        <div>Usuário</div>
+                            <div>Usuário</div>
 
-                    </UserContainer>
+                        </UserContainer>
 
-                </Header>
+                    </Header>
 
-                <div>
-                    <b style={{ fontSize: 18 }}>
-                        {msToTimeService(workingTimeToday)}
-                    </b>
-                    <div style={{ fontSize: 12 }}>
-                        Horas trabalhadas hoje
+                    <div>
+                        <b style={{ fontSize: 18 }}>
+                            {msToTimeService(workingTimeToday)}
+                        </b>
+                        <div style={{ fontSize: 12 }}>
+                            Horas trabalhadas hoje
+                        </div>
                     </div>
-                </div>
 
-                <Button
-                    text={checkInProgress ? "Hora de saída" : "Hora de entrada"}
-                    onClick={checkInOut}
-                    loading={loading}
-                    disabled={loading}
-                />
+                    <Button
+                        text={checkInProgress ? "Hora de saída" : "Hora de entrada"}
+                        onClick={checkInOut}
+                        loading={loading}
+                        disabled={loading}
+                    />
+                </TopContainer>
 
-                <PreviousDaysContainer>
+                <PreviousDaysContainer marginTop={top_container_ref.current?.clientHeight ?? 0}>
                     <div>Dias anteriores</div>
-                    <ScroolContainer>
-                        {getWorkingDaysService(workingDays).map((key: string) => (
-                            <PreviousDayCard onClick={() => setDaySelected(key)} key={key}>
-                                <PreviousDayDate>
-                                    {key}
-                                </PreviousDayDate>
-                                <b>
-                                    {msToTimeService(workingDays[key].workingTime)}
-                                </b>
-                            </PreviousDayCard>
-                        ))}
-                    </ScroolContainer>
+                    {getWorkingDaysService(workingDays).map((key: string) => (
+                        <PreviousDayCard onClick={() => setDaySelected(key)} key={key}>
+                            <PreviousDayDate>
+                                {key}
+                            </PreviousDayDate>
+                            <b>
+                                {msToTimeService(workingDays[key].workingTime)}
+                            </b>
+                        </PreviousDayCard>
+                    ))}
                 </PreviousDaysContainer>
 
             </Content>
@@ -142,6 +142,6 @@ export const HomePage: React.FC = () => {
                 />
             )}
 
-        </Container >
+        </Container>
     )
 }

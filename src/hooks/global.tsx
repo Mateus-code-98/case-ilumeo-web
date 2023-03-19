@@ -1,11 +1,11 @@
 import toast, { ToastOptions } from "react-hot-toast";
-import React, { createContext, useCallback, useContext, PropsWithChildren } from "react";
+import React, { createContext, useCallback, useContext, PropsWithChildren, useState, useEffect } from "react";
 import { BiCheckCircle } from "react-icons/bi";
 import { fail, info, success } from "../theme";
 import { FiAlertOctagon } from "react-icons/fi";
 import { TiDeleteOutline } from "react-icons/ti";
 import { detectMobileService } from "../services/detectMobile.service";
-import { calculeteVH } from "../services/calculeteVH.service";
+import { calculateVH } from "../services/calculateVH.service";
 
 type INotifyTypes = "error" | "success" | "alert";
 
@@ -14,6 +14,7 @@ interface GlobalContextData {
     notify: (message: string, type: INotifyTypes) => void
     notifyOnly: (message: string, type: INotifyTypes) => void
     isMobile: boolean
+    scrollBarVisible: boolean
 }
 
 const GlobalContext = createContext<GlobalContextData>({} as GlobalContextData)
@@ -36,10 +37,16 @@ const notifyProps: ToastOptions = {
     }
 }
 
+function isBodyScrollBarVisible() {
+    return document.documentElement.scrollHeight > document.documentElement.clientHeight || document.body.scrollHeight > document.body.clientHeight;
+}
+
 export const GlobalProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const paginationLimit = 10
 
-    const isMobile = detectMobileService(navigator.userAgent || navigator.vendor, "http://detectmobilebrowser.com/mobile")
+    const [isMobile, setIsMobile] = useState(false)
+    const [controlResize, setControlResize] = useState(false)
+    const [scrollBarVisible, setScrollBarVisible] = useState(false)
 
     const notify = (message: string, type: "error" | "success" | "alert") => toast((t) => (
         <span onClick={() => toast.dismiss(t.id)} style={{ display: "flex", padding: 10, flexDirection: "row", alignItems: "center" }}>
@@ -63,11 +70,17 @@ export const GlobalProvider: React.FC<PropsWithChildren> = ({ children }) => {
         }, 100)
     }, [])
 
-    window.onscroll = () => calculeteVH()
-    window.onresize = () => calculeteVH()
+    window.onresize = () => setControlResize((prev) => !prev)
+
+    useEffect(() => {
+        const _isMobile = detectMobileService(navigator.userAgent || navigator.vendor, "http://detectmobilebrowser.com/mobile")
+        setIsMobile(_isMobile)
+        calculateVH()
+        setScrollBarVisible(isBodyScrollBarVisible())
+    }, [controlResize])
 
     return (
-        <GlobalContext.Provider value={{ notifyOnly, notify, isMobile, paginationLimit }}>
+        <GlobalContext.Provider value={{ scrollBarVisible, notifyOnly, notify, isMobile, paginationLimit }}>
             {children}
         </GlobalContext.Provider>
     )

@@ -1,12 +1,10 @@
-import styled, { css } from "styled-components";
+import styled from "styled-components";
 import { background, gray, secondary } from "../../theme";
 
 export const Container = styled.div`
     display: flex;
     flex-direction: column;
-    ${props => css`
-        background: ${background};
-    `}
+    background: ${background};
     position: relative;
     border-radius: 5px;
     outline: 0;

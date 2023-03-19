@@ -1,5 +1,6 @@
 import { gray } from "../../theme";
 import { TiDelete } from "react-icons/ti";
+import { FiArrowRight } from "react-icons/fi";
 import { ICheckProps } from "../../interfaces";
 import { ModalGeneric } from "../ModalGeneric";
 import { getHours } from "../../services/getHours.service";
@@ -7,8 +8,6 @@ import { msToTimeService } from "../../services/msToTime.service";
 import { correctDateService } from "../../services/correctDate.service";
 import { calcWorkingTimeService } from "../../services/calcWorkingTime.service";
 import { Column, Container, ContainerClose, ContainerTable, Description, Header, Line, Table, TD, TH, Title } from "./style";
-import { BiArrowFromLeft, BiArrowFromRight } from "react-icons/bi";
-import { FiArrowLeft, FiArrowRight } from "react-icons/fi";
 
 interface IModalDayChecksProps {
     onCancel: Function;
@@ -31,7 +30,7 @@ export const ModalDayChecks: React.FC<IModalDayChecksProps> = (props) => {
                             </Title>
 
                             <Description>
-                                Confira abaixo o relatório de checagens de pontos diárias.
+                                Confira abaixo o relatório de checagens de pontos.
                             </Description>
                             <Description>
                                 Referente ao dia {correctDateService(date, { month_in_extension: true, no_have_time: true })}.
@@ -45,30 +44,32 @@ export const ModalDayChecks: React.FC<IModalDayChecksProps> = (props) => {
                     </div>
                 </Header>
 
-                <ContainerTable>
-                    <Table>
-                        <thead>
-                            <tr>
-                                <TH>Entrada</TH>
-                                <TH>Saída</TH>
-                                <TH>Tempo decorrido</TH>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {checks.map((check, index) => (
-                                <tr key={index + " - check"}>
-                                    <TD>{getHours(check.createdAt)}</TD>
-                                    <TD>{check.finished ? getHours(check.updatedAt) : "-"}</TD>
-                                    <TD>{msToTimeService(calcWorkingTimeService([check], 0))}</TD>
+                <div style={{ display: "flex", flexDirection: "column", overflow: "auto" }}>
+                    <ContainerTable>
+                        <Table>
+                            <thead>
+                                <tr>
+                                    <TH>Entrada</TH>
+                                    <TH>Saída</TH>
+                                    <TH>Tempo decorrido</TH>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-                </ContainerTable>
-                <div style={{ paddingBottom: 10, paddingRight: 20, marginTop: -10, color: gray, fontSize: 13, textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 5 }}>
-                    Total
-                    <FiArrowRight />
-                    {msToTimeService(calcWorkingTimeService(checks, 0))}
+                            </thead>
+                            <tbody>
+                                {checks.map((check, index) => (
+                                    <tr key={index + " - check"}>
+                                        <TD>{getHours(check.createdAt)}</TD>
+                                        <TD>{check.finished ? getHours(check.updatedAt) : "-"}</TD>
+                                        <TD>{msToTimeService(calcWorkingTimeService([check], 0))}</TD>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </Table>
+                    </ContainerTable>
+                    <div style={{ paddingBottom: 10, paddingRight: 20, marginTop: -10, color: gray, fontSize: 13, textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 5 }}>
+                        Total
+                        <FiArrowRight />
+                        {msToTimeService(calcWorkingTimeService(checks, 0))}
+                    </div>
                 </div>
             </Container>
         </ModalGeneric>
