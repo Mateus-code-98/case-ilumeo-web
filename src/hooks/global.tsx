@@ -29,7 +29,7 @@ const IconToast = {
 
 const notifyProps: ToastOptions = {
     position: "top-right",
-    duration: 1000000,
+    duration: 10000,
     style: {
         padding: 0,
         hyphens: "auto",

@@ -140,7 +140,7 @@ export const HomePage: React.FC = () => {
             {daySelected && (
                 <ModalDayChecks
                     onCancel={() => setDaySelected(null)}
-                    checks={workingDays["today"]?.checks ?? []}
+                    checks={workingDays[daySelected]?.checks ?? []}
                     openModal
                     date={generateDateService(daySelected)}
                 />
