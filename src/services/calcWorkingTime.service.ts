@@ -1,10 +1,14 @@
 import { ICheckProps } from "../interfaces";
 
-export const calcWorkingTimeService = (checks: ICheckProps[]) => {
+export const calcWorkingTimeService = (checks: ICheckProps[], difference: number) => {
     const workingTime = checks.reduce((acc: number, check) => {
         let { createdAt, updatedAt, finished } = check;
 
-        if (!finished) updatedAt = new Date().toISOString();
+        if (!finished) {
+            const newUpdatedAt = new Date(updatedAt)
+            newUpdatedAt.setSeconds(newUpdatedAt.getSeconds() + difference);
+            updatedAt = newUpdatedAt.toISOString();
+        }
 
         const checkStart = new Date(createdAt).getTime();
 

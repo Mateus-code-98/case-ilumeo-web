@@ -5,6 +5,7 @@ import { fail, info, success } from "../theme";
 import { FiAlertOctagon } from "react-icons/fi";
 import { TiDeleteOutline } from "react-icons/ti";
 import { detectMobileService } from "../services/detectMobile.service";
+import { calculeteVH } from "../services/calculeteVH.service";
 
 type INotifyTypes = "error" | "success" | "alert";
 
@@ -61,6 +62,9 @@ export const GlobalProvider: React.FC<PropsWithChildren> = ({ children }) => {
             notifyOnlyAction(message, type)
         }, 100)
     }, [])
+
+    window.onscroll = () => calculeteVH()
+    window.onresize = () => calculeteVH()
 
     return (
         <GlobalContext.Provider value={{ notifyOnly, notify, isMobile, paginationLimit }}>

@@ -7,7 +7,7 @@ export const getWorkingDaysService = (workingDays: IWorkedDaysProps) => {
     keys_not_today.sort((a, b) => {
         const data_a = generateDateService(a);
         const data_b = generateDateService(b);
-        return data_a.getTime() - data_b.getTime();
+        return data_b.getTime() - data_a.getTime();
     });
 
     return keys_not_today;

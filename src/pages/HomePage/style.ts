@@ -32,7 +32,7 @@ export const PreviousDaysContainer = styled.div`
 export const PreviousDayCard = styled.div`
     display: flex;
     padding: 16px;
-    border-radius: 5px;
+    border-radius: 5px !important;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;

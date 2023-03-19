@@ -9,7 +9,6 @@ const Container = styled.div`
     display: flex;
     flex: 1;
     background-color: ${background};
-    min-height: 100vh;
 `;
 
 export const Routes: React.FC = () => {

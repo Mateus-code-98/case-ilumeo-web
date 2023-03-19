@@ -6,6 +6,7 @@ export const Container = styled.div`
     flex: 1;
     justify-content: center;
     align-items: center;
+    padding: 30px;
 `
 
 export const Content = styled.div`
@@ -16,8 +17,7 @@ export const Content = styled.div`
     justify-content: center;
     min-width: 500px;
     @media(max-width: 560px) {
-        min-width: calc(100% - 60px);
-        margin: 30px;
+        min-width: 100%;
     }
 `
 

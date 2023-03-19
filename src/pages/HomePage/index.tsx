@@ -12,14 +12,14 @@ import { Container, Content, Header, PreviousDayCard, PreviousDayDate, PreviousD
 
 export const HomePage: React.FC = () => {
     const [loading, setLoading] = useState(false)
+    const [socket, setSocket] = useState<Socket>()
     const [workingTimeToday, setWorkingTimeToday] = useState(0)
     const [checkInProgress, setCheckInProgress] = useState(false)
     const [workingDays, setWorkingDays] = useState<IWorkedDaysProps>({})
-    const [socket, setSocket] = useState<Socket>()
 
     const { notify } = useGlobal()
 
-    const { api, user } = useApi()
+    const { api, user, signOut } = useApi()
 
     const searchWorkingDays = useCallback(async (socket?: Socket) => {
         setLoading(true)
@@ -63,20 +63,20 @@ export const HomePage: React.FC = () => {
     }, [checkInProgress, api, socket])
 
     useEffect(() => {
-        setWorkingTimeToday(calcWorkingTimeService(workingDays.today?.checks ?? []));
+        let to_add = 0
+
+        setWorkingTimeToday(calcWorkingTimeService(workingDays.today?.checks ?? [], to_add));
 
         const interval = setInterval(() => {
-            setWorkingTimeToday(calcWorkingTimeService(workingDays.today?.checks ?? []));
+            to_add++;
+            setWorkingTimeToday(calcWorkingTimeService(workingDays.today?.checks ?? [], to_add));
         }, 1000);
 
         return () => clearInterval(interval);
+
     }, [workingDays]);
 
     useEffect(() => { searchWorkingDays() }, [])
-
-    useEffect(() => {
-
-    }, [user, api])
 
     return (
         <Container>
@@ -84,7 +84,7 @@ export const HomePage: React.FC = () => {
 
                 <Header>
                     <div>Relógio de ponto</div>
-                    <UserContainer>
+                    <UserContainer onClick={signOut}>
                         <b>#{user.code}</b>
                         <div>Usuário</div>
                     </UserContainer>
@@ -104,12 +104,14 @@ export const HomePage: React.FC = () => {
 
                 <PreviousDaysContainer>
                     <div>Dias anteriores</div>
-                    {getWorkingDaysService(workingDays).map((key: string) => (
-                        <PreviousDayCard key={key}>
-                            <PreviousDayDate>{key}</PreviousDayDate>
-                            <b>{msToTimeService(workingDays[key].workingTime)}</b>
-                        </PreviousDayCard>
-                    ))}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingRight: 10, marginRight: -10, overflow: "auto", maxHeight: "calc(calc(100 * var(--vh)) - 251px)" }}>
+                        {getWorkingDaysService(workingDays).map((key: string) => (
+                            <PreviousDayCard key={key}>
+                                <PreviousDayDate>{key}</PreviousDayDate>
+                                <b>{msToTimeService(workingDays[key].workingTime)}</b>
+                            </PreviousDayCard>
+                        ))}
+                    </div>
                 </PreviousDaysContainer>
 
             </Content>
