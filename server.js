@@ -10,4 +10,4 @@ app.get('/*', function (req, res) {
     res.sendFile(resolve(__dirname, './build/index.html'))
 })
 
-app.listen(port, () => console.log(`\n🚀 Server is running on PORT ${PORT}\n`))
+app.listen(port, () => console.log(`\n 🚀 - SERVER IS RUNNING ON PORT ${port}`))

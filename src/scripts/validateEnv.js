@@ -25,13 +25,13 @@ const execute = async () => {
     });
 
     if (haveError) {
-        console.log("\n");
-        messages.forEach((message) => console.log("🔴 " + message + "\n"));
+        console.log("")
+        messages.forEach((message) => console.log(" 🔴 - " + message.toUpperCase() + "\n"));
         process.exit(1);
     }
     else {
-        const message = "Environment variables are valid";
-        console.log("\n🟢 " + message + "\n");
+        const message = "ENVIRONMENT VARIABLES ARE VALID"
+        console.log("\n 🟢 - " + message + "\n");
     }
 };
 
