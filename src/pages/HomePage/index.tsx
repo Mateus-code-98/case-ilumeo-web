@@ -14,7 +14,7 @@ import { calcWorkingTimeService } from "../../services/calcWorkingTime.service";
 import { Container, Content, Header, PreviousDayCard, PreviousDayDate, PreviousDaysContainer, TopContainer, UserContainer } from "./style";
 
 export const HomePage: React.FC = () => {
-    const { api, user, signOut } = useApi()
+    const { api, user } = useApi()
     const { notify, isMobile, scrollBarVisible } = useGlobal()
 
     const [loading, setLoading] = useState(false)
@@ -87,7 +87,7 @@ export const HomePage: React.FC = () => {
                     <Header>
                         <div>Relógio de ponto</div>
 
-                        <UserContainer onClick={signOut}>
+                        <UserContainer>
 
                             <b>#{user.code}</b>
 
