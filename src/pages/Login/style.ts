@@ -11,9 +11,14 @@ export const Container = styled.div`
 export const Content = styled.div`
     display: flex;
     flex-direction: column;
-    gap: 30;
+    gap: 30px;
     flex: 1;
     justify-content: center;
+    min-width: 500px;
+    @media(max-width: 560px) {
+        min-width: calc(100% - 60px);
+        margin: 30px;
+    }
 `
 
 export const Title = styled.div`

@@ -1,21 +1,44 @@
 import React, { useState, useCallback, useEffect } from "react";
+import { io, Socket } from "socket.io-client";
 import { useApi } from "../../hooks/api";
 import { useGlobal } from "../../hooks/global";
+import { Button } from "../../components/Button";
+import { REACT_APP_API } from "../../utils/envs";
 import { IWorkedDaysProps } from "../../interfaces";
+import { msToTimeService } from "../../services/msToTime.service";
+import { getWorkingDaysService } from "../../services/getWorkingDays.service";
+import { calcWorkingTimeService } from "../../services/calcWorkingTime.service";
+import { Container, Content, Header, PreviousDayCard, PreviousDayDate, PreviousDaysContainer, UserContainer } from "./style";
 
 export const HomePage: React.FC = () => {
     const [loading, setLoading] = useState(false)
+    const [workingTimeToday, setWorkingTimeToday] = useState(0)
+    const [checkInProgress, setCheckInProgress] = useState(false)
     const [workingDays, setWorkingDays] = useState<IWorkedDaysProps>({})
+    const [socket, setSocket] = useState<Socket>()
 
     const { notify } = useGlobal()
 
-    const { api } = useApi()
+    const { api, user } = useApi()
 
-    const searchWorkingDays = useCallback(async () => {
+    const searchWorkingDays = useCallback(async (socket?: Socket) => {
         setLoading(true)
+        if (REACT_APP_API) {
+            socket?.removeAllListeners()
+            socket?.disconnect()
+
+            const socketInstance = io(REACT_APP_API)
+            setSocket(socketInstance)
+
+            socketInstance.on(user.id, () => searchWorkingDays(socket))
+        }
         try {
-            const { data } = await api.get("/users/working-time")
-            setWorkingDays(data)
+            const [result_working_time, result_check_in_progress] = await Promise.all([
+                api.get("/users/working-time"),
+                api.get("/users/check-in-progress")
+            ])
+            setWorkingDays(result_working_time?.data)
+            setCheckInProgress(!!result_check_in_progress?.data?.id)
         } catch (err: any) {
             const error = err.response ? err.response.data : "SERVER ERROR"
             if (error !== "SERVER ERROR") notify("Não foi possível buscar suas horas trabalhadas!", "alert")
@@ -24,11 +47,72 @@ export const HomePage: React.FC = () => {
         setLoading(false)
     }, [api])
 
+    const checkInOut = useCallback(async () => {
+        setLoading(true)
+        try {
+            const method = checkInProgress ? "put" : "post";
+            await api[method]("/checks");
+            searchWorkingDays(socket);
+        }
+        catch (err: any) {
+            const error = err.response ? err.response.data : "SERVER ERROR"
+            if (error !== "SERVER ERROR") notify("Não foi possível realizar seu ponto!", "alert")
+            else notify("ERRO INTERNO DO SISTEMA!", "error")
+        }
+        setLoading(false)
+    }, [checkInProgress, api, socket])
+
+    useEffect(() => {
+        setWorkingTimeToday(calcWorkingTimeService(workingDays.today?.checks ?? []));
+
+        const interval = setInterval(() => {
+            setWorkingTimeToday(calcWorkingTimeService(workingDays.today?.checks ?? []));
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [workingDays]);
+
     useEffect(() => { searchWorkingDays() }, [])
 
+    useEffect(() => {
+
+    }, [user, api])
+
     return (
-        <div>
-            HomePage
-        </div>
+        <Container>
+            <Content>
+
+                <Header>
+                    <div>Relógio de ponto</div>
+                    <UserContainer>
+                        <b>#{user.code}</b>
+                        <div>Usuário</div>
+                    </UserContainer>
+                </Header>
+
+                <div>
+                    <b style={{ fontSize: 18 }}>{msToTimeService(workingTimeToday)}</b>
+                    <div style={{ fontSize: 12 }}>Horas trabalhadas hoje</div>
+                </div>
+
+                <Button
+                    text={checkInProgress ? "Hora de saída" : "Hora de entrada"}
+                    onClick={checkInOut}
+                    loading={loading}
+                    disabled={loading}
+                />
+
+                <PreviousDaysContainer>
+                    <div>Dias anteriores</div>
+                    {getWorkingDaysService(workingDays).map((key: string) => (
+                        <PreviousDayCard key={key}>
+                            <PreviousDayDate>{key}</PreviousDayDate>
+                            <b>{msToTimeService(workingDays[key].workingTime)}</b>
+                        </PreviousDayCard>
+                    ))}
+                </PreviousDaysContainer>
+
+            </Content>
+        </Container>
     )
 }
