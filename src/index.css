@@ -7,6 +7,7 @@
     margin: 0px;
     outline: 0px;
     font-family: Montserrat;
+    -webkit-tap-highlight-color: transparent;
 }
 
 #root {
@@ -15,6 +16,13 @@
     min-height: calc(100 * var(--vh));
     color: #FFF;
 }
+
+
+*::-webkit-tab-highlight {
+    border: 5px !important;
+    color: #000 !important;
+}
+
 
 *::-webkit-scrollbar {
     width: 12px;

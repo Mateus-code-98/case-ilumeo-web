@@ -5,10 +5,12 @@ import { useGlobal } from "../../hooks/global";
 import { Button } from "../../components/Button";
 import { REACT_APP_API } from "../../utils/envs";
 import { IWorkedDaysProps } from "../../interfaces";
+import { ModalDayChecks } from "../../components/ModalDayChecks";
 import { msToTimeService } from "../../services/msToTime.service";
+import { generateDateService } from "../../services/generateDate.service";
 import { getWorkingDaysService } from "../../services/getWorkingDays.service";
 import { calcWorkingTimeService } from "../../services/calcWorkingTime.service";
-import { Container, Content, Header, PreviousDayCard, PreviousDayDate, PreviousDaysContainer, UserContainer } from "./style";
+import { Container, Content, Header, PreviousDayCard, PreviousDayDate, PreviousDaysContainer, ScroolContainer, UserContainer } from "./style";
 
 export const HomePage: React.FC = () => {
     const [loading, setLoading] = useState(false)
@@ -16,6 +18,7 @@ export const HomePage: React.FC = () => {
     const [workingTimeToday, setWorkingTimeToday] = useState(0)
     const [checkInProgress, setCheckInProgress] = useState(false)
     const [workingDays, setWorkingDays] = useState<IWorkedDaysProps>({})
+    const [daySelected, setDaySelected] = useState<string | null>(null)
 
     const { notify } = useGlobal()
 
@@ -80,19 +83,29 @@ export const HomePage: React.FC = () => {
 
     return (
         <Container>
+
             <Content>
 
                 <Header>
                     <div>Relógio de ponto</div>
+
                     <UserContainer onClick={signOut}>
+
                         <b>#{user.code}</b>
+
                         <div>Usuário</div>
+
                     </UserContainer>
+
                 </Header>
 
                 <div>
-                    <b style={{ fontSize: 18 }}>{msToTimeService(workingTimeToday)}</b>
-                    <div style={{ fontSize: 12 }}>Horas trabalhadas hoje</div>
+                    <b style={{ fontSize: 18 }}>
+                        {msToTimeService(workingTimeToday)}
+                    </b>
+                    <div style={{ fontSize: 12 }}>
+                        Horas trabalhadas hoje
+                    </div>
                 </div>
 
                 <Button
@@ -104,17 +117,31 @@ export const HomePage: React.FC = () => {
 
                 <PreviousDaysContainer>
                     <div>Dias anteriores</div>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 10, paddingRight: 10, marginRight: -10, overflow: "auto", maxHeight: "calc(calc(100 * var(--vh)) - 251px)" }}>
+                    <ScroolContainer>
                         {getWorkingDaysService(workingDays).map((key: string) => (
-                            <PreviousDayCard key={key}>
-                                <PreviousDayDate>{key}</PreviousDayDate>
-                                <b>{msToTimeService(workingDays[key].workingTime)}</b>
+                            <PreviousDayCard onClick={() => setDaySelected(key)} key={key}>
+                                <PreviousDayDate>
+                                    {key}
+                                </PreviousDayDate>
+                                <b>
+                                    {msToTimeService(workingDays[key].workingTime)}
+                                </b>
                             </PreviousDayCard>
                         ))}
-                    </div>
+                    </ScroolContainer>
                 </PreviousDaysContainer>
 
             </Content>
-        </Container>
+
+            {daySelected && (
+                <ModalDayChecks
+                    onCancel={() => setDaySelected(null)}
+                    checks={workingDays[daySelected]?.checks ?? []}
+                    openModal
+                    date={generateDateService(daySelected)}
+                />
+            )}
+
+        </Container >
     )
 }

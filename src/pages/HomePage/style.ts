@@ -57,3 +57,13 @@ export const UserContainer = styled.div`
     flex-direction: column;
     align-items: flex-end;
 `
+
+export const ScroolContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-right: 10px;
+    margin-right: -10px;
+    overflow: auto;
+    max-height: calc(calc(100 * var(--vh)) - 251px);
+`
