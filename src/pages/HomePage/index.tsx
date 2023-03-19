@@ -4,6 +4,7 @@ import { useApi } from "../../hooks/api";
 import { BiHistory } from "react-icons/bi";
 import { useGlobal } from "../../hooks/global";
 import { Button } from "../../components/Button";
+import { REACT_APP_API } from "../../utils/envs";
 import { IWorkedDaysProps } from "../../interfaces";
 import { ModalDayChecks } from "../../components/ModalDayChecks";
 import { msToTimeService } from "../../services/msToTime.service";
@@ -14,10 +15,9 @@ import { Container, Content, Header, PreviousDayCard, PreviousDayDate, PreviousD
 
 export const HomePage: React.FC = () => {
     const { api, user, signOut } = useApi()
-    const { notify, isMobile, scrollBarVisible, scrollIsDown } = useGlobal()
+    const { notify, isMobile, scrollBarVisible } = useGlobal()
 
     const [loading, setLoading] = useState(false)
-    const [socket, setSocket] = useState<Socket>()
     const [workingTimeToday, setWorkingTimeToday] = useState(0)
     const [checkInProgress, setCheckInProgress] = useState(false)
     const [workingDays, setWorkingDays] = useState<IWorkedDaysProps>({})
@@ -27,15 +27,13 @@ export const HomePage: React.FC = () => {
 
     const searchWorkingDays = useCallback(async (socket?: Socket) => {
         setLoading(true)
-        // if (REACT_APP_API) {
-        //     socket?.removeAllListeners()
-        //     socket?.disconnect()
+        if (REACT_APP_API) {
+            socket?.removeAllListeners()
+            socket?.disconnect()
 
-        //     const socketInstance = io(REACT_APP_API)
-        //     setSocket(socketInstance)
-
-        //     socketInstance.on(user.id, () => searchWorkingDays(socket))
-        // }
+            const socketInstance = io(REACT_APP_API)
+            socketInstance.on(user.id, () => searchWorkingDays(socketInstance))
+        }
         try {
             const [result_working_time, result_check_in_progress] = await Promise.all([
                 api.get("/users/working-time"),
@@ -56,14 +54,13 @@ export const HomePage: React.FC = () => {
         try {
             const method = checkInProgress ? "put" : "post";
             await api[method]("/checks");
-            searchWorkingDays(socket);
         }
         catch (err: any) {
             const error = err.response ? err.response.data : "SERVER ERROR"
             if (error !== "SERVER ERROR") notify("Não foi possível realizar seu ponto!", "alert")
             else notify("ERRO INTERNO DO SISTEMA!", "error")
         }
-    }, [checkInProgress, api, socket])
+    }, [checkInProgress, api])
 
     useEffect(() => {
         let to_add = 0
@@ -80,8 +77,6 @@ export const HomePage: React.FC = () => {
     }, [workingDays]);
 
     useEffect(() => { searchWorkingDays() }, [])
-
-    useEffect(() => { console.log({ scrollIsDown, isMobile, scrollBarVisible }) }, [scrollIsDown, isMobile, scrollBarVisible])
 
     return (
         <Container>
@@ -104,7 +99,7 @@ export const HomePage: React.FC = () => {
 
                     <div>
                         <b style={{ fontSize: 18 }}>
-                            {msToTimeService(workingTimeToday,true)}
+                            {msToTimeService(workingTimeToday, true)}
                         </b>
                         <div style={{ fontSize: 12 }}>
                             Horas trabalhadas hoje
