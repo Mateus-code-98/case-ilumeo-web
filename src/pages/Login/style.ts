@@ -16,7 +16,7 @@ export const Content = styled.div`
     flex: 1;
     justify-content: center;
     min-width: 500px;
-    @media(max-width: 560px) {
+    @media(max-width: 600px) {
         min-width: 100%;
     }
 `

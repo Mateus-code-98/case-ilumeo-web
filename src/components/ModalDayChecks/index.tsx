@@ -1,13 +1,14 @@
 import { gray } from "../../theme";
 import { TiDelete } from "react-icons/ti";
-import { FiArrowRight } from "react-icons/fi";
+import { FiArrowRight, FiClock } from "react-icons/fi";
 import { ICheckProps } from "../../interfaces";
 import { ModalGeneric } from "../ModalGeneric";
 import { getHours } from "../../services/getHours.service";
 import { msToTimeService } from "../../services/msToTime.service";
 import { correctDateService } from "../../services/correctDate.service";
 import { calcWorkingTimeService } from "../../services/calcWorkingTime.service";
-import { Column, Container, ContainerClose, ContainerTable, Description, Header, Line, Table, TD, TH, Title } from "./style";
+import { Column, Container, ContainerClose, ContainerTable, Description, Header, Line, LineTD, LineTH, Table, TD, TH, Title } from "./style";
+import { BiArrowToBottom, BiArrowToTop } from "react-icons/bi";
 
 interface IModalDayChecksProps {
     onCancel: Function;
@@ -49,17 +50,44 @@ export const ModalDayChecks: React.FC<IModalDayChecksProps> = (props) => {
                         <Table>
                             <thead>
                                 <tr>
-                                    <TH>Entrada</TH>
-                                    <TH>Saída</TH>
-                                    <TH>Tempo decorrido</TH>
+                                    <TH>
+                                        <LineTH>
+                                            <BiArrowToTop size={14} />
+                                            Entrada
+                                        </LineTH>
+                                    </TH>
+                                    <TH>
+                                        <LineTH>
+                                            <BiArrowToBottom size={14} />
+                                            Saída
+                                        </LineTH>
+                                    </TH>
+                                    <TH>
+                                        <LineTH>
+                                            <FiClock size={14} />
+                                            Tempo decorrido
+                                        </LineTH>
+                                    </TH>
                                 </tr>
                             </thead>
                             <tbody>
                                 {checks.map((check, index) => (
                                     <tr key={index + " - check"}>
-                                        <TD>{getHours(check.createdAt)}</TD>
-                                        <TD>{check.finished ? getHours(check.updatedAt) : "-"}</TD>
-                                        <TD>{msToTimeService(calcWorkingTimeService([check], 0))}</TD>
+                                        <TD>
+                                            <LineTD>
+                                                {getHours(check.createdAt)}
+                                            </LineTD>
+                                        </TD>
+                                        <TD>
+                                            <LineTD>
+                                                {check.finished ? getHours(check.updatedAt) : "-"}
+                                            </LineTD>
+                                        </TD>
+                                        <TD>
+                                            <LineTD>
+                                                {msToTimeService(calcWorkingTimeService([check], 0), true)}
+                                            </LineTD>
+                                        </TD>
                                     </tr>
                                 ))}
                             </tbody>
@@ -68,7 +96,7 @@ export const ModalDayChecks: React.FC<IModalDayChecksProps> = (props) => {
                     <div style={{ paddingBottom: 10, paddingRight: 20, marginTop: -10, color: gray, fontSize: 13, textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 5 }}>
                         Total
                         <FiArrowRight />
-                        {msToTimeService(calcWorkingTimeService(checks, 0))}
+                        {msToTimeService(calcWorkingTimeService(checks, 0), true)}
                     </div>
                 </div>
             </Container>

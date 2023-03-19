@@ -9,6 +9,7 @@ export const Container = styled.div`
     align-items: center;
     padding: 30px;
     padding-top: 0px;
+    padding-bottom: 70px;
 `
 
 export const Content = styled.div`
@@ -17,7 +18,7 @@ export const Content = styled.div`
     gap: 20px;
     flex: 1;
     min-width: 500px;
-    @media(max-width: 560px) {
+    @media(max-width: 600px) {
         min-width: 100%;
     }
 `
@@ -25,7 +26,7 @@ export const Content = styled.div`
 export const PreviousDaysContainer = styled.div<{ marginTop: number }>`
     display: flex;
     flex-direction: column;
-    gap: 10px;
+    gap: 16px;
     font-size: 12px;
     ${props => css`
         margin-top: ${props.marginTop ?? 0}px;
@@ -67,17 +68,17 @@ export const TopContainer = styled.div<{ isMobile: boolean, scrollVisible: boole
     flex-direction: column;
     top: 0;
     padding-top: 30px;
-    padding-bottom: 30px;
+    padding-bottom: 10px;
     background: ${background};
-    min-width: 500px;
     gap: 20px;
+    min-width: 500px;
     ${props => (props.isMobile || (!props.isMobile && !props.scrollVisible)) && css`
-        @media(max-width: 560px) {
+        @media(max-width: 600px) {
             min-width: calc(100vw - 60px);
         }
     `}
     ${props => !props.isMobile && props.scrollVisible && css`
-        @media(max-width: 560px) {
+        @media(max-width: 600px) {
             min-width: calc(100vw - 72px);
         }
     `}

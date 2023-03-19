@@ -4,8 +4,9 @@ import { BiCheckCircle } from "react-icons/bi";
 import { fail, info, success } from "../theme";
 import { FiAlertOctagon } from "react-icons/fi";
 import { TiDeleteOutline } from "react-icons/ti";
-import { detectMobileService } from "../services/detectMobile.service";
 import { calculateVH } from "../services/calculateVH.service";
+import { ScrollToTopButton } from "../components/ScrollToTopButton";
+import { detectMobileService } from "../services/detectMobile.service";
 
 type INotifyTypes = "error" | "success" | "alert";
 
@@ -15,6 +16,7 @@ interface GlobalContextData {
     notifyOnly: (message: string, type: INotifyTypes) => void
     isMobile: boolean
     scrollBarVisible: boolean
+    scrollIsDown: boolean
 }
 
 const GlobalContext = createContext<GlobalContextData>({} as GlobalContextData)
@@ -37,7 +39,11 @@ const notifyProps: ToastOptions = {
     }
 }
 
-function isBodyScrollBarVisible() {
+const isBodyScrolledDown = () => {
+    return document.documentElement.scrollTop > 0 || document.body.scrollTop > 0;
+}
+
+const isBodyScrollBarVisible = () => {
     return document.documentElement.scrollHeight > document.documentElement.clientHeight || document.body.scrollHeight > document.body.clientHeight;
 }
 
@@ -45,7 +51,9 @@ export const GlobalProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const paginationLimit = 10
 
     const [isMobile, setIsMobile] = useState(false)
+    const [scrollIsDown, setScrollIsDown] = useState(false)
     const [controlResize, setControlResize] = useState(false)
+    const [controlScroll, setControlScroll] = useState(false)
     const [scrollBarVisible, setScrollBarVisible] = useState(false)
 
     const notify = (message: string, type: "error" | "success" | "alert") => toast((t) => (
@@ -70,6 +78,8 @@ export const GlobalProvider: React.FC<PropsWithChildren> = ({ children }) => {
         }, 100)
     }, [])
 
+    window.onscroll = () => setControlScroll((prev) => !prev)
+
     window.onresize = () => setControlResize((prev) => !prev)
 
     useEffect(() => {
@@ -77,11 +87,13 @@ export const GlobalProvider: React.FC<PropsWithChildren> = ({ children }) => {
         setIsMobile(_isMobile)
         calculateVH()
         setScrollBarVisible(isBodyScrollBarVisible())
-    }, [controlResize])
+        setScrollIsDown(isBodyScrolledDown())
+    }, [controlResize, controlScroll])
 
     return (
-        <GlobalContext.Provider value={{ scrollBarVisible, notifyOnly, notify, isMobile, paginationLimit }}>
+        <GlobalContext.Provider value={{ scrollBarVisible, scrollIsDown, notifyOnly, notify, isMobile, paginationLimit }}>
             {children}
+            <ScrollToTopButton open={scrollIsDown} />
         </GlobalContext.Provider>
     )
 }

@@ -5,7 +5,6 @@ export const Container = styled.div`
     display: flex;
     flex-direction: column;
     background: ${background};
-    position: relative;
     border-radius: 5px;
     outline: 0;
     min-width:100vw;
@@ -37,7 +36,6 @@ export const Header = styled.div`
     gap: 16px;
     box-shadow: 0.125rem 0.125rem 0.5rem rgba(0,0,0,0.1);
     padding: 20px;
-    position: relative;
     border-top-left-radius: 5px;
     border-top-right-radius: 5px;
     background: ${secondary};
@@ -82,4 +80,18 @@ export const TH = styled.th`
 
 export const TD = styled.td`
     text-align: center;
+`
+
+export const LineTD = styled.td`
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 19px;
+`
+
+export const LineTH = styled.th`
+    display: flex;
+    align-items: center;
+    gap:5px;
+    justify-content: center;
 `

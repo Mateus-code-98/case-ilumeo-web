@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import { io, Socket } from "socket.io-client";
 import { useApi } from "../../hooks/api";
+import { BiHistory } from "react-icons/bi";
 import { useGlobal } from "../../hooks/global";
 import { Button } from "../../components/Button";
 import { IWorkedDaysProps } from "../../interfaces";
@@ -13,7 +14,7 @@ import { Container, Content, Header, PreviousDayCard, PreviousDayDate, PreviousD
 
 export const HomePage: React.FC = () => {
     const { api, user, signOut } = useApi()
-    const { notify, isMobile, scrollBarVisible } = useGlobal()
+    const { notify, isMobile, scrollBarVisible, scrollIsDown } = useGlobal()
 
     const [loading, setLoading] = useState(false)
     const [socket, setSocket] = useState<Socket>()
@@ -62,7 +63,6 @@ export const HomePage: React.FC = () => {
             if (error !== "SERVER ERROR") notify("Não foi possível realizar seu ponto!", "alert")
             else notify("ERRO INTERNO DO SISTEMA!", "error")
         }
-        setLoading(false)
     }, [checkInProgress, api, socket])
 
     useEffect(() => {
@@ -80,6 +80,8 @@ export const HomePage: React.FC = () => {
     }, [workingDays]);
 
     useEffect(() => { searchWorkingDays() }, [])
+
+    useEffect(() => { console.log({ scrollIsDown, isMobile, scrollBarVisible }) }, [scrollIsDown, isMobile, scrollBarVisible])
 
     return (
         <Container>
@@ -102,7 +104,7 @@ export const HomePage: React.FC = () => {
 
                     <div>
                         <b style={{ fontSize: 18 }}>
-                            {msToTimeService(workingTimeToday)}
+                            {msToTimeService(workingTimeToday,true)}
                         </b>
                         <div style={{ fontSize: 12 }}>
                             Horas trabalhadas hoje
@@ -115,10 +117,16 @@ export const HomePage: React.FC = () => {
                         loading={loading}
                         disabled={loading}
                     />
+
+                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                        <BiHistory />
+                        <div style={{ fontSize: 12 }}>Dias anteriores</div>
+                    </div>
+
                 </TopContainer>
 
                 <PreviousDaysContainer marginTop={top_container_ref.current?.clientHeight ?? 0}>
-                    <div>Dias anteriores</div>
+
                     {getWorkingDaysService(workingDays).map((key: string) => (
                         <PreviousDayCard onClick={() => setDaySelected(key)} key={key}>
                             <PreviousDayDate>
@@ -129,6 +137,7 @@ export const HomePage: React.FC = () => {
                             </b>
                         </PreviousDayCard>
                     ))}
+
                 </PreviousDaysContainer>
 
             </Content>
@@ -136,12 +145,13 @@ export const HomePage: React.FC = () => {
             {daySelected && (
                 <ModalDayChecks
                     onCancel={() => setDaySelected(null)}
-                    checks={workingDays[daySelected]?.checks ?? []}
+                    checks={workingDays["today"]?.checks ?? []}
                     openModal
                     date={generateDateService(daySelected)}
                 />
             )}
 
         </Container>
+
     )
 }
