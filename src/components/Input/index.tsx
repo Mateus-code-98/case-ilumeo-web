@@ -5,6 +5,7 @@ interface IInputProps {
     label?: string;
     disabled: boolean;
     required: boolean;
+    onFocus?: () => void;
 }
 
 export interface IInputRefProps {
@@ -12,7 +13,7 @@ export interface IInputRefProps {
 }
 
 const InputComponent: React.ForwardRefRenderFunction<IInputRefProps, IInputProps> = (props, ref) => {
-    const { label, disabled, required } = props
+    const { label, disabled, required, onFocus = () => { } } = props
 
     const input_ref = useRef<HTMLInputElement>(null)
 
@@ -33,7 +34,7 @@ const InputComponent: React.ForwardRefRenderFunction<IInputRefProps, IInputProps
                     {label}
                 </Label>
             )}
-            <BaseInput required={required} disabled={disabled} ref={input_ref} />
+            <BaseInput onFocus={onFocus} required={required} disabled={disabled} ref={input_ref} />
         </Container>
     )
 }

@@ -33,7 +33,7 @@ export const PreviousDaysContainer = styled.div<{ marginTop: number }>`
     `}
 `
 
-export const PreviousDayCard = styled.div`
+export const PreviousDayCard = styled.div<{ disabled: boolean }>`
     display: flex;
     padding: 16px;
     border-radius: 5px !important;
@@ -42,6 +42,10 @@ export const PreviousDayCard = styled.div`
     justify-content: space-between;
     background: ${secondary};
     cursor: pointer;
+    ${props => props.disabled && css`
+        opacity: 0.5;
+        pointer-events: none;
+    `}
 `
 
 export const PreviousDayDate = styled.div`
@@ -67,6 +71,7 @@ export const TopContainer = styled.div<{ isMobile: boolean, scrollVisible: boole
     position: fixed;
     flex-direction: column;
     top: 0;
+    z-index: 999;
     padding-top: 30px;
     padding-bottom: 10px;
     background: ${background};
@@ -82,4 +87,38 @@ export const TopContainer = styled.div<{ isMobile: boolean, scrollVisible: boole
             min-width: calc(100vw - 72px);
         }
     `}
+`
+
+export const ButtonSignOut = styled.div<{ disabled: boolean }>`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px;
+    background: ${secondary};
+    color: #FFF;
+    font-size: 12px;
+    padding: 10px;
+    gap: 5px;
+    cursor: pointer;
+    ${props => props.disabled && css`
+        opacity: 0.5;
+        pointer-events: none;
+    `}
+`
+
+export const ContainerToday = styled.div`
+    display: flex;
+    justify-content: space-between;
+    gap:10px;
+`
+
+export const Column = styled.div`
+    display: flex;
+    flex-direction: column;
+`
+
+export const ContainerLastDays = styled.div`
+     display: flex;
+     align-items: center;
+     gap: 5px;
 `

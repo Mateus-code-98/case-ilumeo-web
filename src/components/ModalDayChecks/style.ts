@@ -95,3 +95,22 @@ export const LineTH = styled.th`
     gap:5px;
     justify-content: center;
 `
+
+export const TotalContainer = styled.div`
+    padding-bottom: 10px;
+    padding-right: 20px;
+    margin-top: -10px;
+    color: ${gray};
+    font-size: 13px;
+    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 5px;
+`
+
+export const OverflowContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+`

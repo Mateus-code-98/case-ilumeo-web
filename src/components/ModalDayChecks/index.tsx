@@ -1,14 +1,13 @@
-import { gray } from "../../theme";
 import { TiDelete } from "react-icons/ti";
-import { FiArrowRight, FiClock } from "react-icons/fi";
-import { ICheckProps } from "../../interfaces";
 import { ModalGeneric } from "../ModalGeneric";
+import { ICheckProps } from "../../interfaces";
+import { FiArrowRight, FiClock } from "react-icons/fi";
 import { getHours } from "../../services/getHours.service";
+import { BiArrowToBottom, BiArrowToTop } from "react-icons/bi";
 import { msToTimeService } from "../../services/msToTime.service";
 import { correctDateService } from "../../services/correctDate.service";
 import { calcWorkingTimeService } from "../../services/calcWorkingTime.service";
-import { Column, Container, ContainerClose, ContainerTable, Description, Header, Line, LineTD, LineTH, Table, TD, TH, Title } from "./style";
-import { BiArrowToBottom, BiArrowToTop } from "react-icons/bi";
+import { Column, Container, ContainerClose, ContainerTable, Description, Header, Line, LineTD, LineTH, OverflowContainer, Table, TD, TH, Title, TotalContainer } from "./style";
 
 interface IModalDayChecksProps {
     onCancel: Function;
@@ -23,6 +22,7 @@ export const ModalDayChecks: React.FC<IModalDayChecksProps> = (props) => {
     return (
         <ModalGeneric open={openModal} onClose={() => onCancel()}>
             <Container>
+
                 <Header>
                     <Line style={{ gap: 10 }}>
                         <Column style={{ gap: 5 }}>
@@ -45,7 +45,8 @@ export const ModalDayChecks: React.FC<IModalDayChecksProps> = (props) => {
                     </div>
                 </Header>
 
-                <div style={{ display: "flex", flexDirection: "column", overflow: "auto" }}>
+                <OverflowContainer>
+
                     <ContainerTable>
                         <Table>
                             <thead>
@@ -93,12 +94,15 @@ export const ModalDayChecks: React.FC<IModalDayChecksProps> = (props) => {
                             </tbody>
                         </Table>
                     </ContainerTable>
-                    <div style={{ paddingBottom: 10, paddingRight: 20, marginTop: -10, color: gray, fontSize: 13, textAlign: "right", display: "flex", alignItems: "center", justifyContent: "flex-end", gap: 5 }}>
+
+                    <TotalContainer>
                         Total
                         <FiArrowRight />
                         {msToTimeService(calcWorkingTimeService(checks, 0), true)}
-                    </div>
-                </div>
+                    </TotalContainer>
+
+                </OverflowContainer>
+
             </Container>
         </ModalGeneric>
     )

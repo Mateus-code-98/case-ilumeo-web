@@ -1,3 +1,4 @@
+import styled from "styled-components";
 import toast, { ToastOptions } from "react-hot-toast";
 import React, { createContext, useCallback, useContext, PropsWithChildren, useState, useEffect } from "react";
 import { BiCheckCircle } from "react-icons/bi";
@@ -21,6 +22,14 @@ interface GlobalContextData {
 
 const GlobalContext = createContext<GlobalContextData>({} as GlobalContextData)
 
+const isBodyScrolledDown = () => {
+    return document.documentElement.scrollTop > 0 || document.body.scrollTop > 0;
+}
+
+const isBodyScrollBarVisible = () => {
+    return document.documentElement.scrollHeight > document.documentElement.clientHeight || document.body.scrollHeight > document.body.clientHeight;
+}
+
 const IconToast = {
     error: <TiDeleteOutline style={{ marginRight: 10 }} size={26} color={fail} />,
     success: <BiCheckCircle style={{ marginRight: 10 }} size={26} color={success} />,
@@ -39,13 +48,25 @@ const notifyProps: ToastOptions = {
     }
 }
 
-const isBodyScrolledDown = () => {
-    return document.documentElement.scrollTop > 0 || document.body.scrollTop > 0;
-}
+const NotifyContainer = styled.span`
+    display: flex;
+    padding: 10px;
+    flex-direction: row;
+    align-items: center;
+`
 
-const isBodyScrollBarVisible = () => {
-    return document.documentElement.scrollHeight > document.documentElement.clientHeight || document.body.scrollHeight > document.body.clientHeight;
-}
+const IconContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+`
+
+const MessageContainer = styled.div`
+    cursor: default;
+    text-align: center;
+    color: #000;
+    font-size: 13px;
+`
 
 export const GlobalProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const paginationLimit = 10
@@ -57,17 +78,17 @@ export const GlobalProvider: React.FC<PropsWithChildren> = ({ children }) => {
     const [scrollBarVisible, setScrollBarVisible] = useState(false)
 
     const notify = (message: string, type: "error" | "success" | "alert") => toast((t) => (
-        <span onClick={() => toast.dismiss(t.id)} style={{ display: "flex", padding: 10, flexDirection: "row", alignItems: "center" }}>
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>{IconToast[type]}</div>
-            <div style={{ cursor: "default", textAlign: "center", color: "#000", fontSize: 13 }}>{message}</div>
-        </span>
+        <NotifyContainer onClick={() => toast.dismiss(t.id)}>
+            <IconContainer>{IconToast[type]}</IconContainer>
+            <MessageContainer>{message}</MessageContainer>
+        </NotifyContainer>
     ), notifyProps);
 
     const notifyOnlyAction = (message: string, type: "error" | "success" | "alert") => toast((t) => (
-        <span onClick={() => toast.dismiss(t.id)} style={{ display: "flex", padding: 10, flexDirection: "row", alignItems: "center" }}>
-            <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>{IconToast[type]}</div>
-            <div style={{ cursor: "default", textAlign: "center", color: "#000", fontSize: 13, }}>{message}</div>
-        </span>
+        <NotifyContainer onClick={() => toast.dismiss(t.id)}>
+            <IconContainer>{IconToast[type]}</IconContainer>
+            <MessageContainer>{message}</MessageContainer>
+        </NotifyContainer>
     ), notifyProps);
 
     const notifyOnly = useCallback((message: string, type: "error" | "success" | "alert") => {

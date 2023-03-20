@@ -1,24 +1,27 @@
 import React, { useState, useCallback, useEffect } from "react";
-import { io, Socket } from "socket.io-client";
 import { useApi } from "../../hooks/api";
 import { BiHistory } from "react-icons/bi";
+import { io, Socket } from "socket.io-client";
 import { useGlobal } from "../../hooks/global";
+import { RiLoginBoxLine } from "react-icons/ri";
 import { Button } from "../../components/Button";
 import { REACT_APP_API } from "../../utils/envs";
 import { IWorkedDaysProps } from "../../interfaces";
+import { ModalConfirm } from "../../components/ModalAttention";
 import { ModalDayChecks } from "../../components/ModalDayChecks";
 import { msToTimeService } from "../../services/msToTime.service";
 import { generateDateService } from "../../services/generateDate.service";
 import { getWorkingDaysService } from "../../services/getWorkingDays.service";
 import { calcWorkingTimeService } from "../../services/calcWorkingTime.service";
-import { Container, Content, Header, PreviousDayCard, PreviousDayDate, PreviousDaysContainer, TopContainer, UserContainer } from "./style";
+import { ButtonSignOut, Column, Container, ContainerLastDays, ContainerToday, Content, Header, PreviousDayCard, PreviousDayDate, PreviousDaysContainer, TopContainer, UserContainer } from "./style";
 
 export const HomePage: React.FC = () => {
-    const { api, user } = useApi()
+    const { api, user, signOut } = useApi()
     const { notify, isMobile, scrollBarVisible } = useGlobal()
 
     const [loading, setLoading] = useState(false)
     const [workingTimeToday, setWorkingTimeToday] = useState(0)
+    const [confirmSignOut, setConfirmSignOut] = useState(false)
     const [checkInProgress, setCheckInProgress] = useState(false)
     const [workingDays, setWorkingDays] = useState<IWorkedDaysProps>({})
     const [daySelected, setDaySelected] = useState<string | null>(null)
@@ -86,25 +89,26 @@ export const HomePage: React.FC = () => {
                 <TopContainer ref={top_container_ref} scrollVisible={scrollBarVisible} isMobile={isMobile}>
                     <Header>
                         <div>Relógio de ponto</div>
-
                         <UserContainer>
-
                             <b>#{user.code}</b>
-
                             <div>Usuário</div>
-
                         </UserContainer>
-
                     </Header>
 
-                    <div>
-                        <b style={{ fontSize: 18 }}>
-                            {msToTimeService(workingTimeToday, true)}
-                        </b>
-                        <div style={{ fontSize: 12 }}>
-                            Horas trabalhadas hoje
-                        </div>
-                    </div>
+                    <ContainerToday>
+                        <Column>
+                            <b style={{ fontSize: 18 }}>
+                                {msToTimeService(workingTimeToday, true)}
+                            </b>
+                            <div style={{ fontSize: 12 }}>
+                                Horas trabalhadas hoje
+                            </div>
+                        </Column>
+                        <ButtonSignOut disabled={loading} onClick={() => setConfirmSignOut(true)}>
+                            <RiLoginBoxLine />
+                            Sair
+                        </ButtonSignOut>
+                    </ContainerToday>
 
                     <Button
                         text={checkInProgress ? "Hora de saída" : "Hora de entrada"}
@@ -113,17 +117,15 @@ export const HomePage: React.FC = () => {
                         disabled={loading}
                     />
 
-                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                    <ContainerLastDays>
                         <BiHistory />
                         <div style={{ fontSize: 12 }}>Dias anteriores</div>
-                    </div>
-
+                    </ContainerLastDays>
                 </TopContainer>
 
                 <PreviousDaysContainer marginTop={top_container_ref.current?.clientHeight ?? 0}>
-
                     {getWorkingDaysService(workingDays).map((key: string) => (
-                        <PreviousDayCard onClick={() => setDaySelected(key)} key={key}>
+                        <PreviousDayCard disabled={loading} onClick={() => setDaySelected(key)} key={key}>
                             <PreviousDayDate>
                                 {key}
                             </PreviousDayDate>
@@ -132,7 +134,6 @@ export const HomePage: React.FC = () => {
                             </b>
                         </PreviousDayCard>
                     ))}
-
                 </PreviousDaysContainer>
 
             </Content>
@@ -146,7 +147,17 @@ export const HomePage: React.FC = () => {
                 />
             )}
 
-        </Container>
+            {confirmSignOut && (
+                <ModalConfirm
+                    open
+                    cancelAction={() => setConfirmSignOut(false)}
+                    confirmAction={signOut}
+                    content="Deseja realmente sair?"
+                    cancelText="Não"
+                    confirmText="Sim"
+                />
+            )}
 
+        </Container>
     )
 }
